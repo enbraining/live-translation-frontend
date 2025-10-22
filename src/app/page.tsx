@@ -25,6 +25,7 @@ export default function Home() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const [audioData, setAudioData] = useState<number[]>([]);
+  const [texts, setTexts] = useState<string[]>([]);
 
   useEffect(() => {
     const startRecording = async () => {
@@ -43,15 +44,18 @@ export default function Home() {
       const workletNode = new AudioWorkletNode(audioContext, "audio-processor");
       workletNodeRef.current = workletNode;
 
-      workletNode.port.onmessage = (event) => {
+      workletNode.port.onmessage = async (event) => {
         const newData = Array.from(event.data) as number[];
         setAudioData(newData);
 
-        fetch("/proto", {
+        const response = await fetch("/proto", {
           method: "POST",
           headers: { "Content-Type": "application/octet-stream" },
           body: event.data.buffer,
         });
+
+        const splitTexts = (await response.json()).message.split("\n");
+        setTexts(splitTexts);
       };
 
       source.connect(workletNode);
@@ -81,20 +85,15 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <div>녹음중... 마이크 사용 권한을 허용하세요.</div>
-      <div style={{ width: "100%", height: "100%" }}>
-        <Line
-          data={data}
-          options={{
-            animation: false,
-            responsive: true,
-            scales: {
-              x: { max: 8096, ticks: { stepSize: 160 } },
-              y: { min: -512, max: 512, ticks: { stepSize: 16384 } },
-            },
-          }}
-        />
+    <div className="h-screen grid">
+      <div className="m-auto">
+        {texts.length > 0 && (
+          <ul className="text-center text-5xl font-bold">
+            {texts.slice(-5).map((text, index) => (
+              <li key={index}>{text}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
