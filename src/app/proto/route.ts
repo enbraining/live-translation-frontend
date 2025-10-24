@@ -19,7 +19,7 @@ const grpcObject = grpc.loadPackageDefinition(packageDefinition);
 const greeterPackage = grpcObject.helloworld as any;
 
 const client = new greeterPackage.Greeter(
-  "localhost:50052",
+  process.env.GRPC_SERVER_URL || "localhost:50052",
   grpc.credentials.createInsecure()
 );
 
