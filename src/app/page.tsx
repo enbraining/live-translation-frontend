@@ -25,7 +25,8 @@ export default function Home() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const [audioData, setAudioData] = useState<number[]>([]);
-  const [texts, setTexts] = useState<string[]>([]);
+  const [korean, setKorean] = useState<string>();
+  const [english, setEnglish] = useState<string>();
 
   useEffect(() => {
     const startRecording = async () => {
@@ -54,8 +55,12 @@ export default function Home() {
           body: event.data.buffer,
         });
 
-        const splitTexts = (await response.json()).message.split("\n");
-        setTexts(splitTexts);
+        const body = await response.json();
+
+        setKorean(body.korean);
+        setEnglish(
+          JSON.parse(body.english).message.result.translatedText.toString()
+        );
       };
 
       source.connect(workletNode);
@@ -87,13 +92,8 @@ export default function Home() {
   return (
     <div className="h-screen grid">
       <div className="m-auto">
-        {texts.length > 0 && (
-          <ul className="text-center text-5xl font-bold">
-            {texts.slice(-5).map((text, index) => (
-              <li key={index}>{text}</li>
-            ))}
-          </ul>
-        )}
+        <p className="font-bold text-4xl">{korean}</p>
+        <p className="font-bold text-4xl">{english}</p>
       </div>
     </div>
   );

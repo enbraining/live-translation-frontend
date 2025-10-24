@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const buffer = await request.arrayBuffer();
     const audioData = new Uint8Array(buffer);
 
-    const sayHello = (): Promise<{ message: string }> =>
+    const sayHello = (): Promise<{ korean: string; english: string }> =>
       new Promise((resolve, reject) => {
         client.SayHello(
           { audio_data: audioData },
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: (error as Error).message }), {
+    return new Response(JSON.stringify({}), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

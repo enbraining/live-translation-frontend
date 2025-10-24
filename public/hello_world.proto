@@ -32,5 +32,6 @@ message HelloRequest {
 
 // The response message containing the greetings
 message HelloReply {
-  string message = 1;
+  string korean = 1;
+  string english = 2;
 }
