@@ -1,8 +1,7 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import path from "path";
 import { NextRequest } from "next/server";
-import { writeFileSync } from "fs";
+import protobuf from "protobufjs";
 
 const protoStr = `
 syntax = "proto3";
@@ -32,16 +31,16 @@ message HelloReply {
 `;
 
 export async function POST(request: NextRequest) {
-  const tmpPath = path.join("temp.proto");
-  writeFileSync(tmpPath, protoStr);
-
-  const packageDefinition = protoLoader.loadSync(tmpPath, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true,
-  });
+  const packageDefinition = protoLoader.fromJSON(
+    protobuf.parse(protoStr, { keepCase: true }).root,
+    {
+      keepCase: true,
+      longs: String,
+      enums: String,
+      defaults: true,
+      oneofs: true,
+    }
+  );
   const grpcObject = grpc.loadPackageDefinition(packageDefinition);
   const greeterPackage = grpcObject.helloworld as any;
 
