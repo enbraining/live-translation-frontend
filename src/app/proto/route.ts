@@ -31,25 +31,25 @@ message HelloReply {
 }
 `;
 
-const tmpPath = path.join("temp.proto");
-writeFileSync(tmpPath, protoStr);
-
-const packageDefinition = protoLoader.loadSync(tmpPath, {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
-});
-const grpcObject = grpc.loadPackageDefinition(packageDefinition);
-const greeterPackage = grpcObject.helloworld as any;
-
-const client = new greeterPackage.Greeter(
-  process.env.GRPC_SERVER_URL || "localhost:50052",
-  grpc.credentials.createInsecure()
-);
-
 export async function POST(request: NextRequest) {
+  const tmpPath = path.join("temp.proto");
+  writeFileSync(tmpPath, protoStr);
+
+  const packageDefinition = protoLoader.loadSync(tmpPath, {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  });
+  const grpcObject = grpc.loadPackageDefinition(packageDefinition);
+  const greeterPackage = grpcObject.helloworld as any;
+
+  const client = new greeterPackage.Greeter(
+    process.env.GRPC_SERVER_URL || "localhost:50052",
+    grpc.credentials.createInsecure()
+  );
+
   try {
     const buffer = await request.arrayBuffer();
     const audioData = new Uint8Array(buffer);
