@@ -1,13 +1,8 @@
-// app/api/greeter/route.ts
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
 import { NextRequest } from "next/server";
 import { writeFileSync } from "fs";
-
-// const PROTO_PATH = path.resolve(
-//   `${process.env.PROTO_PATH}/public/hello_world.proto`
-// );
 
 const protoStr = `
 syntax = "proto3";
