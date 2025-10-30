@@ -45,10 +45,10 @@ export default function Home() {
           const body = await response.json();
           console.log(body);
 
-          // setKorean(body.korean);
-          // setEnglish(
-          //   JSON.parse(body.english).message.result.translatedText.toString()
-          // );
+          setKorean(body.korean);
+          setEnglish(
+            JSON.parse(body.english).message.result.translatedText.toString()
+          );
         } else {
           console.log("Not speaking");
         }
