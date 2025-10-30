@@ -1,25 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend
-);
 
 export default function Home() {
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -49,18 +30,27 @@ export default function Home() {
         const newData = Array.from(event.data) as number[];
         setAudioData(newData);
 
-        const response = await fetch("/proto", {
-          method: "POST",
-          headers: { "Content-Type": "application/octet-stream" },
-          body: event.data.buffer,
-        });
+        const THRESHOLD = 0.048;
+        const isSpeaking = newData.some((value) => Math.abs(value) > THRESHOLD);
 
-        const body = await response.json();
+        if (isSpeaking) {
+          console.log("Speaking");
 
-        setKorean(body.korean);
-        setEnglish(
-          JSON.parse(body.english).message.result.translatedText.toString()
-        );
+          const response = await fetch("/proto", {
+            method: "POST",
+            headers: { "Content-Type": "application/octet-stream" },
+            body: event.data.buffer,
+          });
+
+          const body = await response.json();
+
+          setKorean(body.korean);
+          setEnglish(
+            JSON.parse(body.english).message.result.translatedText.toString()
+          );
+        } else {
+          console.log("Not speaking");
+        }
       };
 
       source.connect(workletNode);

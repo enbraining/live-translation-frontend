@@ -5,7 +5,7 @@ import path from "path";
 import { NextRequest } from "next/server";
 
 const PROTO_PATH = path.resolve(
-  "/Users/enbraining/Projects/live-translation-service/public/hello_world.proto"
+  `${process.env.PROTO_PATH}/public/hello_world.proto`
 );
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
