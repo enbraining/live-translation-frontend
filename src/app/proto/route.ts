@@ -31,7 +31,7 @@ message HelloReply {
 }
 `;
 
-const tmpPath = path.join(__dirname, "temp.proto");
+const tmpPath = path.join("temp.proto");
 writeFileSync(tmpPath, protoStr);
 
 const packageDefinition = protoLoader.loadSync(tmpPath, {
