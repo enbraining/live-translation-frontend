@@ -3,12 +3,43 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
 import { NextRequest } from "next/server";
+import { writeFileSync } from "fs";
 
-const PROTO_PATH = path.resolve(
-  `${process.env.PROTO_PATH}/public/hello_world.proto`
-);
+// const PROTO_PATH = path.resolve(
+//   `${process.env.PROTO_PATH}/public/hello_world.proto`
+// );
 
-const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+const protoStr = `
+syntax = "proto3";
+
+package helloworld;
+
+option java_multiple_files = true;
+option java_outer_classname = "HelloWorldProto";
+option java_package = "io.grpc.examples.helloworld";
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello(HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  bytes audio_data = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string korean = 1;
+  string english = 2;
+}
+`;
+
+const tmpPath = path.join(__dirname, "temp.proto");
+writeFileSync(tmpPath, protoStr);
+
+const packageDefinition = protoLoader.loadSync(tmpPath, {
   keepCase: true,
   longs: String,
   enums: String,
